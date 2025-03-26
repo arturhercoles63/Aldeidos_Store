@@ -3,13 +3,30 @@
 #include <ArduinoJson.h>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
+#include "max6675.h"
+
+// debug options
 
 #define STA false
+
+// defines
 
 #define BAG_1 13
 #define BAG_2 12
 #define BAG_3 14
 #define BAG_4 27
+
+// MAX6675 configs
+
+int thermoDO = 12;
+int thermoCS = 15;
+int thermoCLK = 14;
+
+float Temperature;
+
+MAX6675 thermocouple(thermoCLK, thermoCS, thermoDO);
+
+// wifi configs
 
 const char* ssid = "MD-4000SX";
 const char* password = "12345678";
@@ -60,6 +77,7 @@ void Plot_Values(){
   MessageJson["Volt2"] = volts1;
   MessageJson["Volt3"] = volts2;
   MessageJson["Volt4"] = volts3;
+  MessageJson["Temperature"] = Temperature;
 
   serializeJson(MessageJson, output);
   ws.textAll(output);
@@ -139,6 +157,7 @@ void setup(void){
   pinMode(BAG_3, INPUT);
   pinMode(BAG_4, INPUT);
 
+
   initWiFi();
   initWebSocket();
 
@@ -179,7 +198,9 @@ void loop(void){
   volts1 = ads.computeVolts(adc1);
   volts2 = ads.computeVolts(adc2);
   volts3 = ads.computeVolts(adc3);
- 
+  
+  Temperature = thermocouple.readCelsius();
+
   ws.cleanupClients();
 
   if(now - count > 1000){

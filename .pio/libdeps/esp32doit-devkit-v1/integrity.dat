@@ -1,0 +1,4 @@
+adafruit/MAX6675 library@^1.1.2
+bblanchon/ArduinoJson@^7.1.0
+adafruit/Adafruit BusIO@^1.17.0
+adafruit/Adafruit ADS1X15@^2.5.0
